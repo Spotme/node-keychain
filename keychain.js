@@ -48,34 +48,22 @@ KeychainAccess.prototype.getPassword = function(opts, fn) {
     return;
   }
 
-  var security = spawn(this.executablePath, [ 'find-'+opts.type+'-password', '-a', opts.account, '-s', opts.service, '-g' ]);
-  var keychain = '';
+  var security = spawn(this.executablePath, [ 'find-'+opts.type+'-password', '-a', opts.account, '-s', opts.service, '-w' ]);
   var password = '';
 
   security.stdout.on('data', function(d) {
-    keychain += d.toString();
+    password += d.toString();
   });
 
   // For better or worse, the last line (containing the actual password) is actually written to stderr instead of stdout.
   // Reference: http://blog.macromates.com/2006/keychain-access-from-shell/
-  security.stderr.on('data', function(d) {
-    password += d.toString();
-  });
-
-  security.on('exit', function(code, signal) {
+  security.on('exit', function(code) {
     if (code !== 0) {
       err = new Error('Could not find password');
       fn(err, null);
       return;
     }
-
-    if (/password/.test(password)) {
-      password = password.match(/"(.*)\"/, '')[1];
-      fn(null, password);
-    } else {
-      err = new Error('Could not find password');
-      fn(err, null);
-    }
+    fn(null, password.slice(0, -1));
   });
 };
 
