@@ -55,8 +55,8 @@ KeychainAccess.prototype.getPassword = function(opts, fn) {
     password += d.toString();
   });
 
-  // For better or worse, the last line (containing the actual password) is actually written to stderr instead of stdout.
-  // Reference: http://blog.macromates.com/2006/keychain-access-from-shell/
+  // Using the -w option, don't know available in Mavericks (don't know about
+  // older versions
   security.on('exit', function(code) {
     if (code !== 0) {
       err = new Error('Could not find password');
