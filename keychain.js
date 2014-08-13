@@ -57,7 +57,7 @@ KeychainAccess.prototype.getPassword = function(opts, fn) {
 
   // Using the -w option, don't know available in Mavericks (don't know about
   // older versions
-  security.on('exit', function(code) {
+  security.on('close', function(code) {
     if (code !== 0) {
       err = new Error('Could not find password');
       fn(err, null);
